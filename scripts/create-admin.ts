@@ -1,5 +1,5 @@
-import { loadEnvConfig } from "@next/env";
-loadEnvConfig(process.cwd());
+import nextEnv from "@next/env";
+nextEnv.loadEnvConfig(process.cwd());
 
 async function main() {
   const [{ createFirstAdmin }, { adminSetupSchema }, { db }] = await Promise.all([
