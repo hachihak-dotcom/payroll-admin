@@ -1,0 +1,83 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  SYSTEM_ADMIN
+  PAYROLL_MANAGER
+  DEPARTMENT_MANAGER
+  VIEWER
+}
+
+model Department {
+  id        String   @id @default(uuid()) @db.Uuid
+  code      String   @unique @db.VarChar(24)
+  name      String   @db.VarChar(80)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  users     User[]
+
+  @@map("departments")
+}
+
+model User {
+  id             String      @id @default(uuid()) @db.Uuid
+  email          String      @unique @db.VarChar(254)
+  name           String      @db.VarChar(80)
+  passwordHash   String      @map("password_hash")
+  role           Role
+  active         Boolean     @default(true)
+  sessionVersion Int         @default(0) @map("session_version")
+  departmentId   String?     @map("department_id") @db.Uuid
+  department     Department? @relation(fields: [departmentId], references: [id], onDelete: Restrict)
+  createdAt      DateTime    @default(now()) @map("created_at")
+  updatedAt      DateTime    @updatedAt @map("updated_at")
+  auditLogs      AuditLog[]
+
+  @@index([departmentId])
+  @@map("users")
+}
+
+model BudgetAccount {
+  id        String   @id @default(uuid()) @db.Uuid
+  code      String   @unique @db.VarChar(24)
+  name      String   @db.VarChar(80)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("budget_accounts")
+}
+
+model AuditLog {
+  id         String   @id @default(uuid()) @db.Uuid
+  actorId    String?  @map("actor_id") @db.Uuid
+  actor      User?    @relation(fields: [actorId], references: [id], onDelete: Restrict)
+  action     String   @db.VarChar(40)
+  entity     String   @db.VarChar(32)
+  entityId   String?  @map("entity_id") @db.Uuid
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  @@index([actorId, createdAt])
+  @@index([entity, entityId, createdAt])
+  @@map("audit_logs")
+}
+
+model LoginThrottle {
+  id          String   @id @default(uuid()) @db.Uuid
+  key         String   @unique @db.VarChar(64)
+  count       Int      @default(0)
+  windowStart DateTime @map("window_start")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@index([windowStart])
+  @@map("login_throttles")
+}
