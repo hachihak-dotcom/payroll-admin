@@ -33,7 +33,7 @@ test("관리자 초기 등록, 로그인 실패, 대시보드 및 예산과목 �
   await page.getByLabel("이메일").fill(email);
   await page.getByLabel("비밀번호", { exact: true }).fill("incorrect");
   await page.getByRole("button", { name: "로그인", exact: true }).click();
-  await expect(page.getByRole("alert")).toContainText("이메일과 비밀번호를 확인");
+  await expect(page.getByRole("alert").filter({ hasText: "이메일과 비밀번호를 확인" })).toContainText("이메일과 비밀번호를 확인");
   await page.getByLabel("이메일").fill(email);
   await page.getByLabel("비밀번호", { exact: true }).fill(password);
   await page.getByRole("button", { name: "로그인", exact: true }).click();

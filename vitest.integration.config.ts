@@ -1,5 +1,5 @@
 import { defineConfig } from "vitest/config";
-import config from "./vitest.config";
+import config from "./vitest.config.ts";
 
 const url = process.env.TEST_DATABASE_URL;
 if (!url || !new URL(url).pathname.endsWith("_test")) {

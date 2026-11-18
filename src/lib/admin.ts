@@ -34,9 +34,8 @@ export async function listAdminRecords(actor: Actor, resource: Resource, id?: st
   return db.budgetAccount.findMany({ where: { id }, orderBy: { code: "asc" } });
 }
 
-async function changeUser(tx: Prisma.TransactionClient, resourceId: string | undefined, input: unknown, passwordHash: string | undefined) {
-  const schema = resourceId ? userUpdateSchema : userCreateSchema;
-  const { password: _password, ...data } = schema.parse(input);
+async function changeUser(tx: Prisma.TransactionClient, resourceId: string | undefined, userData: ReturnType<typeof userUpdateSchema.parse>, passwordHash: string | undefined) {
+  const { password: _password, ...data } = userData;
   if (data.departmentId && !await tx.department.findFirst({ where: { id: data.departmentId, active: true } })) {
     throw new AdminError(422, "사용 중인 부서를 선택하세요.");
   }
@@ -71,7 +70,7 @@ export async function saveAdminRecord(actor: Actor, resource: Resource, input: u
         await tx.user.findFirst({ where: { departmentId: id, active: true } })) {
       throw new AdminError(409, "활성 사용자가 소속된 부서입니다. 먼저 사용자 소속을 변경하거나 비활성화하세요.");
     }
-    const record = resource === "users" ? await changeUser(tx, id, input, passwordHash)
+    const record = resource === "users" ? await changeUser(tx, id, userData!, passwordHash)
       : resource === "departments" ? (id ? await tx.department.update({ where: { id }, data: catalogData! }) : await tx.department.create({ data: catalogData! }))
       : id ? await tx.budgetAccount.update({ where: { id }, data: catalogData! }) : await tx.budgetAccount.create({ data: catalogData! });
     await tx.auditLog.create({
