@@ -24,6 +24,7 @@ npm run dev
 | 변수 | 목적 |
 | --- | --- |
 | `DATABASE_URL` | 애플리케이션용 PostgreSQL 연결 URI. 스키마는 `payroll`을 사용합니다. |
+| `DATABASE_CA_CERT` | 서버 TLS 검증에 별도 루트 CA가 필요할 때 넣는 PEM 인증서 |
 | `AUTH_SECRET` | Auth.js 세션 암호화 및 로그인 제한 키 생성 |
 | `AUTH_URL` | 로컬 또는 단일 호스트를 강제할 때 사용하는 정식 주소. Vercel에서는 자동 호스트를 사용할 수 있습니다. |
 | `SETUP_TOKEN` | 웹 최초 관리자 등록용 설정 코드. 32자 이상이며, 최초 등록 후 삭제할 수 있습니다. |
@@ -49,7 +50,7 @@ npm run test:e2e
 ## Vercel 배포
 
 1. Vercel 프로젝트를 Next.js 및 Node.js 24로 설정하고 GitHub 저장소를 연결합니다.
-2. PostgreSQL에서 마이그레이션 전용 역할로 `npm run db:migrate`를 실행합니다. 운영 PostgreSQL 연결은 TLS와 커넥션 풀을 사용합니다.
+2. PostgreSQL에서 마이그레이션 전용 역할로 `npm run db:migrate`를 실행합니다. 운영 PostgreSQL 연결은 TLS 인증서 검증과 커넥션 풀을 사용합니다. 별도 CA가 필요하면 런타임의 `DATABASE_CA_CERT`에 공식 PEM을 넣고, 마이그레이션 CLI는 연결 문자열의 `sslcert`에 PEM 파일 경로를 지정합니다.
 3. Production 환경에 마이그레이션 권한이 없는 런타임 `DATABASE_URL`, `AUTH_SECRET`, 최초 관리자 설정용 `SETUP_TOKEN`을 설정합니다. Preview에 DB가 필요하면 별도의 테스트 DB와 비밀을 사용합니다.
 4. 프로덕션 배포의 로그인 화면에서 최초 관리자를 등록합니다. 등록 완료 후 Vercel에서 `SETUP_TOKEN`을 제거하고 환경 변경 사항을 배포합니다.
 
