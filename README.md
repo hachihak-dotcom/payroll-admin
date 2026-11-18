@@ -2,6 +2,10 @@
 
 공공기관 및 교육기관을 위한 급여 지급 관리 웹 애플리케이션입니다. 현재 버전은 **Phase 1**입니다. Auth.js 로그인과 역할 검증, PostgreSQL 기반 사용자·부서·예산과목 관리를 제공합니다. 대시보드에는 실제 등록 건수를 표시하고 급여 지표에는 단계별 연결 상태를 표시합니다.
 
+## Windows 앱
+
+Windows 10/11 x64용 실행 파일은 [GitHub 릴리스](https://github.com/hachihak-dotcom/payroll-admin/releases)에서 내려받을 수 있습니다. 기존 계정과 운영 데이터베이스를 사용하며 인터넷과 Microsoft Edge WebView2 Runtime이 필요합니다. [실행 및 빌드 안내](desktop/README.md)
+
 ## 로컬 환경
 
 Node.js 24, npm, Docker Compose가 필요합니다.
